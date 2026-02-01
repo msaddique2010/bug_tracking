@@ -1,0 +1,11 @@
+<% content_for :title, "New bug" %>
+
+<h1>New bug</h1>
+
+<%= render "form", bug: @bug %>
+
+<br>
+
+<div>
+  <%= link_to "Back to bugs", bugs_path %>
+</div>

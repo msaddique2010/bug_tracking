@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  project: one
+  title: MyText
+  deadline: 2026-02-02
+  bug_type: MyString
+  status: MyString
+
+two:
+  project: two
+  title: MyText
+  deadline: 2026-02-02
+  bug_type: MyString
+  status: MyString
