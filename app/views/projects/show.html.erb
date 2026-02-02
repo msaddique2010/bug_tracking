@@ -8,3 +8,8 @@
 
   <%= button_to "Destroy this project", @project, method: :delete %>
 </div>
+
+<div>
+  <br><br>
+  <%= link_to "Add a Bug", new_project_bug_path(@project)%>
+</div>
