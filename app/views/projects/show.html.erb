@@ -12,4 +12,32 @@
 <div>
   <br><br>
   <%= link_to "Add a Bug", new_project_bug_path(@project)%>
+  <br>---------- Bugs ---------- <br>
+  <%@bugs.each do |bug|%>
+    <div>
+    <strong>Project:</strong>
+    <%= bug.project_id %>
+  </div>
+
+  <div>
+    <strong>Title:</strong>
+    <%= bug.title %>
+  </div>
+
+  <div>
+    <strong>Deadline:</strong>
+    <%= bug.deadline %>
+  </div>
+
+  <div>
+    <strong>Bug type:</strong>
+    <%= bug.bug_type %>
+  </div>
+
+  <div>
+    <strong>Status:</strong>
+    <%= bug.status %>
+  </div>
+  ------------------------------------------<br><br>
+  <%end%>
 </div>

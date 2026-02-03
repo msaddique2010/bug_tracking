@@ -18,6 +18,7 @@ class BugsController < ApplicationController
 
   def create
     @bug = @project.bugs.new(bug_params)
+    @bug.user = current_user
 
     if @bug.save
       redirect_to project_bug_path(@project, @bug), notice: "Bug was successfully created."

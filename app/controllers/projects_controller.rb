@@ -8,6 +8,7 @@ class ProjectsController < ApplicationController
 
   # GET /projects/1 or /projects/1.json
   def show
+    @bugs = @project.bugs.all
   end
 
   # GET /projects/new
@@ -60,11 +61,11 @@ class ProjectsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_project
-      @project = Project.find(params.expect(:id))
+      @project = Project.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
     def project_params
-      params.expect(project: [ :name, :description ])
+      params.require(:project).permit(:name, :description)
     end
 end
