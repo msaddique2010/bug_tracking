@@ -24,47 +24,34 @@ class ProjectsController < ApplicationController
   def create
     @project = Project.new(project_params)
 
-    respond_to do |format|
-      if @project.save
-        format.html { redirect_to @project, notice: "Project was successfully created." }
-        format.json { render :show, status: :created, location: @project }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @project.errors, status: :unprocessable_entity }
-      end
+    if @project.save
+        redirect_to @project, notice: "Project was successfully created."
+    else
+        render :new, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /projects/1 or /projects/1.json
   def update
-    respond_to do |format|
       if @project.update(project_params)
-        format.html { redirect_to @project, notice: "Project was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @project }
+        redirect_to @project, notice: "Project was successfully updated.", status: :see_other
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @project.errors, status: :unprocessable_entity }
+        render :edit, status: :unprocessable_entity
       end
-    end
   end
 
   # DELETE /projects/1 or /projects/1.json
   def destroy
     @project.destroy!
 
-    respond_to do |format|
-      format.html { redirect_to projects_path, notice: "Project was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
-    end
+    redirect_to projects_path, notice: "Project was successfully destroyed.", status: :see_other
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_project
       @project = Project.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def project_params
       params.require(:project).permit(:name, :description)
     end

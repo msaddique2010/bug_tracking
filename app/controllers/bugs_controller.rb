@@ -21,7 +21,7 @@ class BugsController < ApplicationController
     @bug.user = current_user
 
     if @bug.save
-      redirect_to project_bug_path(@project, @bug), notice: "Bug was successfully created."
+      redirect_to @project, notice: "Project was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
