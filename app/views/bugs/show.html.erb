@@ -3,8 +3,8 @@
 <%= render @bug %>
 
 <div>
- <%# <%= link_to "Edit this bug", edit_bug_path(@bug) %> 
-  <%# <%= link_to "Back to bugs", bugs_path %>
+<%= link_to "Edit this bug", edit_project_bug_path(@project, @bug) %>
+<%= link_to "Back to Project", project_path(@project) %>
 
-  <%# <%= button_to "Destroy this bug", @bug, method: :delete %>
+<%= button_to "Destroy this bug", project_bug_path(@project, @bug), method: :delete %>
 </div>
