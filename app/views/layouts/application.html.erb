@@ -29,9 +29,9 @@
       <p class="notice"><%= alert %></p>
       <%if current_user&.has_role? :manager%>
         <p>Hello! I'm a manager. My name is <%= current_user.name%></p>
-      <%elsif current_user&.has_role? :developer%>
+      <%elseif current_user&.has_role? :developer%>
         <p>Hello! I'm a Developer. My name is <%= current_user.name%></p>
-      <%elsif current_user&.has_role? :qa%>
+      <%elseif current_user&.has_role? :qa%>
         <p>Hello! I'm a QA. My name is <%= current_user.name%></p>
       <%end%>
 
