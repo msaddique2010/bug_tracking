@@ -18,12 +18,13 @@
     <strong>Status:</strong>
     <%= bug.status %>
   </div>
-
+  <%if bug.image.attached? %>
   <div>
     <strong>Image:</strong>
     <div style="height: 100px">
       <%= image_tag @bug.image, style: "height: 100px; width: auto;" %>
     </div>
   </div>
+  <%end%>
 
 </div>

@@ -23,12 +23,12 @@
 
   <div>
     <%= form.label :bug_type, style: "display: block" %>
-    <%= form.text_field :bug_type %>
+    <%= form.select :bug_type, ["Bug", "Feature"] %>
   </div>
 
   <div>
     <%= form.label :status, style: "display: block" %>
-    <%= form.text_field :status %>
+    <%= form.select :status, ["New", "Started", "Reolved/Completed"] %>
   </div>
 
   <div>
