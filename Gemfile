@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 gem "rolify"
+gem "cancancan"
+gem "pundit", "~> 2.5"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.1.2"
