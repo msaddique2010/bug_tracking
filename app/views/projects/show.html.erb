@@ -3,7 +3,9 @@
 <%= render @project %>
 
 <div>
-  <%= link_to "Edit this project", edit_project_path(@project) %> |
+  <% if current_user.has_role?(:manager) && current_user == @project.user %>
+    <%= link_to "Edit this project", edit_project_path(@project) %> |
+  <% end %>  
   <%= link_to "Back to projects", projects_path %>
 
   <%= button_to "Destroy this project", @project, method: :delete %>

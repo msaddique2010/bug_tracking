@@ -25,8 +25,13 @@
   </head>
 
   <body>
-      <p class="notice"><%= notice %></p>
-      <p class="notice"><%= alert %></p>
+      <% if flash[:alert] %>
+        <div class="alert"><%= flash[:alert] %></div>
+      <% end %>
+      <% if flash[:notice] %>
+        <div class="notice"><%= flash[:notice] %></div>
+      <% end %>
+
       <%if current_user&.has_role? :manager%>
         <p>Hello! I'm a manager. My name is <%= current_user.name%></p>
       <%elsif current_user&.has_role? :developer%>
