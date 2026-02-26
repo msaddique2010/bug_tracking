@@ -29,7 +29,7 @@ class ProjectPolicy < ApplicationPolicy
   end
 
   def destroy?
-    false
+    user.has_role?(:manager) && user == record.user
   end
 
   class Scope < ApplicationPolicy::Scope

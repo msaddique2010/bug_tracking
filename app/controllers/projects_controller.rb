@@ -44,6 +44,7 @@ class ProjectsController < ApplicationController
 
   # DELETE /projects/1 or /projects/1.json
   def destroy
+    authorize @project
     @project.destroy!
 
     redirect_to projects_path, notice: "Project was successfully destroyed.", status: :see_other
