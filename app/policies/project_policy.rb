@@ -13,7 +13,7 @@ class ProjectPolicy < ApplicationPolicy
   end
 
   def create?
-    false
+    user.has_role?(:manager)
   end
 
   def new?
