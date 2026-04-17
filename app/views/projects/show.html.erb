@@ -10,6 +10,11 @@
 
   <%= button_to "Destroy this project", @project, method: :delete %>
 </div>
+<br>
+<%= form_with model: @project do |f| %>
+  <%= f.collection_select :user_id, @users, :id, :name %>
+  <%= f.submit "Assign Developer"%>
+<% end %>
 
 <div>
   <br><br>

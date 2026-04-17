@@ -9,6 +9,7 @@ class ProjectsController < ApplicationController
   # GET /projects/1 or /projects/1.json
   def show
     @bugs = @project.bugs.all
+    @users = User.with_role(:developer)
   end
 
   # GET /projects/new
