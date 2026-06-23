@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: my-rails-app
+    runtime: ruby
+    buildCommand: "./bin/render-build.sh"
+    startCommand: "bundle exec puma -C config/puma.rb"
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite3:db/production.sqlite3
+      - key: RAILS_MASTER_KEY
+        sync: false   # you'll paste this manually in Render dashboard
+      - key: RAILS_ENV
+        value: production
