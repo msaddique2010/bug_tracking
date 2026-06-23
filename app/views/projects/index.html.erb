@@ -1,16 +1,39 @@
-<p style="color: green"><%= notice %></p>
+<div>
+  <p><%= notice %></p>
 
-<% content_for :title, "Projects" %>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div>
+      <h1 style="margin: 0; color: #333;">Projects Dashboard</h1>
+    </div>
+    <div style="display: flex; gap: 10px; align-items: center;">
+      <% if policy(Project.new).create? %>
+        <%= link_to "New Project", new_project_path, style: "padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;" %>
+      <% end %>
+    </div>
+  </div>
 
-<h1>Projects</h1>
-
-<div id="projects">
-  <% @projects.each do |project| %>
-    <%= render project %>
-    <p>
-      <%= link_to "Show this project", project %>
-    </p>
-  <% end %>
+  <div id="projects">
+    <% if @projects.any? %>
+      <% @projects.each do |project| %>
+        <div>
+          <div>
+            <h3><%= project.name %></h3>
+            <p><%= project.description.presence || "No description provided." %></p>
+          </div>
+          
+          <div>
+            <span>By: <%= project.user.name %></span>
+            <%= link_to "Open Project", project %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div>
+        <h3>No projects found.</h3>
+        <% if policy(Project.new).create? %>
+          <p>Get started by creating a new project!</p>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 </div>
-
-<%= link_to "New project", new_project_path %>

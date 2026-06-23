@@ -10,6 +10,15 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
-    # Add more helper methods to be used by all tests here...
+    # Sync roles from user_type for fixtures since SQL load bypasses callbacks
+    setup do
+      User.all.each do |user|
+        user.add_role(user.user_type.to_sym) if user.user_type.present?
+      end
+    end
   end
+end
+
+class ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
 end

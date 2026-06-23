@@ -1,40 +1,159 @@
-<%= form_with model: [@project, @bug] do |form| %>
-  <% if bug.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(bug.errors.count, "error") %> prohibited this bug from being saved:</h2>
-
+<%= form_with model: [@project, @bug], id: "bug-form", local: true do |form| %>
+  <% if @bug.errors.any? %>
+    <div>
+      <h2><%= pluralize(@bug.errors.count, "error") %> prohibited this bug from being saved:</h2>
       <ul>
-        <% bug.errors.each do |error| %>
+        <% @bug.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
       </ul>
     </div>
   <% end %>
-  
-  <div>
-    <%= form.label :title, style: "display: block" %>
-    <%= form.textarea :title %>
+
+  <!-- Live Search Project Select -->
+  <div class="project-search-container">
+    <label for="project-search-input">Project (Live Search)</label>
+    <input type="text" id="project-search-input" placeholder="Type to search project..." autocomplete="off" required>
+    
+    <div id="project-search-dropdown" style="display: none; position: absolute; background: white; border: 1px solid #ccc; max-height: 200px; overflow-y: auto; z-index: 1000;">
+      <% @projects_for_select.each do |proj| %>
+        <div class="project-search-item" data-id="<%= proj.id %>" data-name="<%= proj.name.downcase %>" style="cursor: pointer;">
+          <%= proj.name %>
+        </div>
+      <% end %>
+    </div>
+    <%= form.hidden_field :project_id, id: "bug_project_id", value: @project&.id %>
   </div>
 
   <div>
-    <%= form.label :deadline, style: "display: block" %>
+    <%= form.label :title %>
+    <%= form.text_field :title, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :description %>
+    <%= form.text_area :description %>
+  </div>
+
+  <div>
+    <%= form.label :deadline %>
     <%= form.date_field :deadline %>
   </div>
 
   <div>
-    <%= form.label :bug_type, style: "display: block" %>
-    <%= form.select :bug_type, ["Bug", "Feature"] %>
+    <%= form.label :bug_type %>
+    <%= form.select :bug_type, [['Bug', 'bug'], ['Feature', 'feature']], {}, { id: "bug_type_select", required: true } %>
   </div>
 
   <div>
-    <%= form.label :status, style: "display: block" %>
-    <%= form.select :status, ["New", "Started", "Reolved/Completed"] %>
+    <%= form.label :status %>
+    <% current_options = @bug.bug_type == 'feature' ? [['New', 'new'], ['Started', 'started'], ['Completed', 'completed']] : [['New', 'new'], ['Started', 'started'], ['Resolved', 'resolved']] %>
+    <%= form.select :status, current_options, {}, { id: "bug_status_select", required: true } %>
   </div>
 
   <div>
-      <%= form.file_field :image, accept: "image/png, image/gif" %>
+    <%= form.label :developer_id, "Assign Developer" %>
+    <%= form.collection_select :developer_id, @project.users.where(user_type: :developer), :id, :name, { include_blank: "Unassigned" } %>
   </div>
+
+  <div>
+    <%= form.label :image, "Screenshot (PNG or GIF only)" %>
+    <%= form.file_field :image, accept: "image/png, image/gif" %>
+  </div>
+
   <div>
     <%= form.submit %>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const input = document.getElementById("project-search-input");
+    const dropdown = document.getElementById("project-search-dropdown");
+    const hiddenField = document.getElementById("bug_project_id");
+    const items = document.querySelectorAll(".project-search-item");
+
+    // Live search project selection
+    <% if @project %>
+      input.value = "<%= escape_javascript(@project.name) %>";
+    <% end %>
+
+    input.addEventListener("focus", function() {
+      dropdown.style.display = "block";
+    });
+
+    document.addEventListener("click", function(e) {
+      if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = "none";
+      }
+    });
+
+    input.addEventListener("input", function() {
+      const query = input.value.toLowerCase();
+      dropdown.style.display = "block";
+      items.forEach(function(item) {
+        const name = item.getAttribute("data-name");
+        if (name.includes(query)) {
+          item.style.display = "block";
+        } else {
+          item.style.display = "none";
+        }
+      });
+    });
+
+    items.forEach(function(item) {
+      item.addEventListener("click", function() {
+        input.value = item.textContent.trim();
+        hiddenField.value = item.getAttribute("data-id");
+        dropdown.style.display = "none";
+        
+        const form = document.getElementById("bug-form");
+        if (form) {
+          const isNew = <%= @bug.new_record? ? 'true' : 'false' %>;
+          if (isNew) {
+            form.action = "/projects/" + hiddenField.value + "/bugs";
+          } else {
+            form.action = "/projects/" + hiddenField.value + "/bugs/" + "<%= @bug.id %>";
+          }
+        }
+      });
+    });
+
+    // Dynamic Bug Type / Status Dropdown Management
+    const typeSelect = document.getElementById("bug_type_select");
+    const statusSelect = document.getElementById("bug_status_select");
+
+    const statuses = {
+      bug: [
+        ['New', 'new'],
+        ['Started', 'started'],
+        ['Resolved', 'resolved']
+      ],
+      feature: [
+        ['New', 'new'],
+        ['Started', 'started'],
+        ['Completed', 'completed']
+      ]
+    };
+
+    function updateStatuses() {
+      const type = typeSelect.value;
+      const currentStatus = "<%= @bug.status %>" || 'new';
+      statusSelect.innerHTML = "";
+      
+      const options = statuses[type] || [];
+      options.forEach(function(opt) {
+        const option = document.createElement("option");
+        option.value = opt[1];
+        option.textContent = opt[0];
+        if (opt[1] === currentStatus) {
+          option.selected = true;
+        }
+        statusSelect.appendChild(option);
+      });
+    }
+
+    typeSelect.addEventListener("change", updateStatuses);
+    updateStatuses(); // initial run
+  });
+</script>

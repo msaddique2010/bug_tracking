@@ -1,15 +1,15 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   project: one
-  title: MyText
-  deadline: 2026-02-02
-  bug_type: MyString
-  status: MyString
+  creator: three
+  title: Title of Bug One
+  deadline: 2026-12-25
+  bug_type: bug
+  status: new
 
 two:
-  project: two
-  title: MyText
-  deadline: 2026-02-02
-  bug_type: MyString
-  status: MyString
+  project: one
+  creator: three
+  title: Title of Feature Two
+  deadline: 2026-12-26
+  bug_type: feature
+  status: new

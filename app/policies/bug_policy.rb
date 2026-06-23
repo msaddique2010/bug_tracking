@@ -1,14 +1,47 @@
 class BugPolicy < ApplicationPolicy
-  # NOTE: Up to Pundit v2.3.1, the inheritance was declared as
-  # `Scope < Scope` rather than `Scope < ApplicationPolicy::Scope`.
-  # In most cases the behavior will be identical, but if updating existing
-  # code, beware of possible changes to the ancestors:
-  # https://gist.github.com/Burgestrand/4b4bc22f31c8a95c425fc0e30d7ef1f5
+  def show?
+    # Anyone who can see the project can see its bugs
+    ProjectPolicy.new(user, record.project).show?
+  end
+
+  def create?
+    user.has_role?(:qa) || user.has_role?(:manager)
+  end
+
+  def new?
+    create?
+  end
+
+  def update?
+    # Creator of the bug, or the manager of the project
+    record.user_id == user.id || (user.has_role?(:manager) && record.project.user_id == user.id)
+  end
+
+  def edit?
+    update?
+  end
+
+  def destroy?
+    # Developer cannot delete a bug
+    return false if user.has_role?(:developer)
+
+    # Creator of the bug, or the manager of the project
+    record.user_id == user.id || (user.has_role?(:manager) && record.project.user_id == user.id)
+  end
+
+  def assign?
+    # Developer can assign a bug to themselves if they belong to the project
+    user.has_role?(:developer) && record.project.users.include?(user)
+  end
+
+  def resolve?
+    # Developer can resolve the bug if it is assigned to them
+    user.has_role?(:developer) && record.developer_id == user.id
+  end
 
   class Scope < ApplicationPolicy::Scope
-    # NOTE: Be explicit about which records you allow access to!
-    # def resolve
-    #   scope.all
-    # end
+    def resolve
+      scope.all
+    end
   end
 end

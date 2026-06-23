@@ -5,26 +5,31 @@
   </div>
 
   <div>
-    <strong>Deadline:</strong>
-    <%= bug.deadline %>
+    <strong>Description:</strong>
+    <%= bug.description.presence || "No description provided." %>
   </div>
 
   <div>
-    <strong>Bug type:</strong>
-    <%= bug.bug_type %>
+    <strong>Deadline:</strong>
+    <%= bug.deadline.presence || "No deadline set" %>
+  </div>
+
+  <div>
+    <strong>Bug Type:</strong>
+    <span><%= bug.bug_type %></span>
   </div>
 
   <div>
     <strong>Status:</strong>
-    <%= bug.status %>
+    <span><%= bug.status %></span>
   </div>
-  <%if bug.image.attached? %>
-  <div>
-    <strong>Image:</strong>
-    <div style="height: 100px">
-      <%= image_tag @bug.image, style: "height: 100px; width: auto;" %>
-    </div>
-  </div>
-  <%end%>
 
+  <% if bug.image.attached? %>
+    <div>
+      <strong>Screenshot:</strong>
+      <div>
+        <%= image_tag bug.image %>
+      </div>
+    </div>
+  <% end %>
 </div>

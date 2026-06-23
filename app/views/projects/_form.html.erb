@@ -1,8 +1,7 @@
 <%= form_with(model: project) do |form| %>
   <% if project.errors.any? %>
-    <div style="color: red">
+    <div>
       <h2><%= pluralize(project.errors.count, "error") %> prohibited this project from being saved:</h2>
-
       <ul>
         <% project.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -12,13 +11,44 @@
   <% end %>
 
   <div>
-    <%= form.label :name, style: "display: block" %>
+    <%= form.label :name %>
     <%= form.text_field :name %>
   </div>
 
   <div>
-    <%= form.label :description, style: "display: block" %>
-    <%= form.textarea :description %>
+    <%= form.label :description %>
+    <%= form.text_area :description %>
+  </div>
+
+  <div>
+    <h3>Assign Users (Developers & QA)</h3>
+    <div>
+      <% if @assignable_users.any? %>
+        <% @assignable_users.each_with_index do |user, index| %>
+          <% project_user = @project.project_users.find_by(user_id: user.id) %>
+          <div>
+            <% if project_user %>
+              <%= hidden_field_tag "project[project_users_attributes][#{index}][id]", project_user.id %>
+              <%= hidden_field_tag "project[project_users_attributes][#{index}][user_id]", user.id %>
+              <%= hidden_field_tag "project[project_users_attributes][#{index}][_destroy]", "1", id: "destroy_user_#{user.id}" %>
+              <input type="checkbox" checked onchange="document.getElementById('destroy_user_<%= user.id %>').value = this.checked ? '0' : '1'" id="checkbox_user_<%= user.id %>">
+              <label for="checkbox_user_<%= user.id %>">
+                <strong><%= user.name %></strong> (<%= user.email %>) - <span><%= user.user_type %></span>
+              </label>
+            <% else %>
+              <%= hidden_field_tag "project[project_users_attributes][#{index}][_destroy]", "1", id: "destroy_user_#{user.id}" %>
+              <%= hidden_field_tag "project[project_users_attributes][#{index}][user_id]", user.id, id: "user_id_#{user.id}", disabled: true %>
+              <input type="checkbox" onchange="document.getElementById('destroy_user_<%= user.id %>').value = this.checked ? '0' : '1'; document.getElementById('user_id_<%= user.id %>').disabled = !this.checked" id="checkbox_user_<%= user.id %>">
+              <label for="checkbox_user_<%= user.id %>">
+                <strong><%= user.name %></strong> (<%= user.email %>) - <span><%= user.user_type %></span>
+              </label>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <p>No developers or QA users found.</p>
+      <% end %>
+    </div>
   </div>
 
   <div>

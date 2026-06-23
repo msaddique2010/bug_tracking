@@ -1,16 +1,93 @@
-<p style="color: green"><%= notice %></p>
+<p><%= notice %></p>
 
-<% content_for :title, "Bugs" %>
+<div>
+  <div>
+    <h1>Bugs & Features for <%= @project.name %></h1>
+    <div>
+      <%= link_to "Back to Project Details", project_path(@project) %>
+      <% if policy(Bug.new(project: @project)).create? %>
+        <%= link_to "Report New Bug/Feature", new_project_bug_path(@project) %>
+      <% end %>
+    </div>
+  </div>
 
-<h1>Bugs</h1>
+  <!-- Search and Filter Form -->
+  <%= form_with url: project_bugs_path(@project), method: :get, local: true do |f| %>
+    <div>
+      <%= f.label :query, "Search Title" %>
+      <%= f.text_field :query, value: params[:query], placeholder: "Search by bug/feature title..." %>
+    </div>
 
-<div id="bugs">
-  <% @bugs.each do |bug| %>
-    <%= render bug %>
-    <p>
-      <%= link_to "Show this bug", bug %>
-    </p>
+    <div>
+      <%= f.label :status, "Filter Status" %>
+      <%= f.select :status, [['All Statuses', ''], ['New', 'new'], ['Started', 'started'], ['Resolved', 'resolved'], ['Completed', 'completed']], { selected: params[:status] } %>
+    </div>
+
+    <div>
+      <%= f.label :bug_type, "Filter Type" %>
+      <%= f.select :bug_type, [['All Types', ''], ['Bug', 'bug'], ['Feature', 'feature']], { selected: params[:bug_type] } %>
+    </div>
+
+    <div>
+      <%= f.submit "Filter" %>
+      <%= link_to "Clear", project_bugs_path(@project) %>
+    </div>
   <% end %>
-</div>
 
-<%= link_to "New bug", new_bug_path %>
+  <!-- Bug List -->
+  <div>
+    <% if @bugs.any? %>
+      <% @bugs.each do |bug| %>
+        <div>
+          <div>
+            <div>
+              <span><%= bug.bug_type %></span>
+              <span><%= bug.status %></span>
+            </div>
+            
+            <h3><%= bug.title %></h3>
+            <p><%= bug.description.presence || "No description provided." %></p>
+            
+            <div>
+              <strong>Deadline:</strong> <%= bug.deadline.presence || "No deadline" %> |
+              <strong>Creator:</strong> <%= bug.creator.name %> |
+              <strong>Assigned To:</strong> <%= bug.developer ? bug.developer.name : "Unassigned" %>
+            </div>
+          </div>
+
+          <div>
+            <% if bug.image.attached? %>
+              <div>
+                <%= image_tag bug.image %>
+              </div>
+            <% end %>
+
+            <div>
+              <%= link_to "Details", project_bug_path(@project, bug) %>
+              
+              <% if policy(bug).assign? %>
+                <%= button_to "Claim Bug", assign_project_bug_path(@project, bug), method: :patch %>
+              <% end %>
+
+              <% if policy(bug).resolve? %>
+                <%= button_to "Mark Resolved", resolve_project_bug_path(@project, bug), method: :patch %>
+              <% end %>
+
+              <% if policy(bug).edit? %>
+                <%= link_to "Edit", edit_project_bug_path(@project, bug) %>
+              <% end %>
+
+              <% if policy(bug).destroy? %>
+                <%= button_to "Delete", project_bug_path(@project, bug), method: :delete, data: { confirm: "Are you sure?" } %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div>
+        <h3>No bugs or features found matching the criteria.</h3>
+      </div>
+    <% end %>
+  </div>
+</div>

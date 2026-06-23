@@ -1,15 +1,18 @@
 class Bug < ApplicationRecord
-  validates :title, uniqueness: { scope: :project_id }
-  validate :correct_image_type
-  validates_presence_of :title, :status, :bug_type
-  has_one_attached :image
-  default_scope { order(created_at: :desc) }
   belongs_to :project
-  belongs_to :user
+  belongs_to :creator, class_name: 'User', foreign_key: 'user_id'
+  belongs_to :developer, class_name: 'User', foreign_key: 'developer_id', optional: true
 
-# Source - https://stackoverflow.com/a/57508895
-# Posted by awsmketchup, modified by community. See post 'Timeline' for change history
-# Retrieved 2026-02-15, License - CC BY-SA 4.0
+  has_one_attached :image
+
+  default_scope { order(created_at: :desc) }
+
+  validates :title, presence: true, uniqueness: { scope: :project_id }
+  validates :status, presence: true
+  validates :bug_type, presence: true, inclusion: { in: %w[feature bug] }
+
+  validate :correct_image_type
+  validate :status_matches_type
 
   private
 
@@ -18,7 +21,19 @@ class Bug < ApplicationRecord
 
     if image.attached? && !image.content_type.in?(valid_formats)
       image.purge
-      errors.add(:image, "Must be a PNG or GIF")
+      errors.add(:image, "must be a PNG or GIF")
+    end
+  end
+
+  def status_matches_type
+    if bug_type == 'feature'
+      unless status.in?(%w[new started completed])
+        errors.add(:status, "must be new, started, or completed for a feature")
+      end
+    elsif bug_type == 'bug'
+      unless status.in?(%w[new started resolved])
+        errors.add(:status, "must be new, started, or resolved for a bug")
+      end
     end
   end
 end

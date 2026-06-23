@@ -2,6 +2,8 @@ require "test_helper"
 
 class ProjectsControllerTest < ActionDispatch::IntegrationTest
   setup do
+    @manager = users(:one)
+    sign_in @manager
     @project = projects(:one)
   end
 
@@ -17,7 +19,7 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create project" do
     assert_difference("Project.count") do
-      post projects_url, params: { project: { description: @project.description, name: @project.name } }
+      post projects_url, params: { project: { description: "New project description", name: "New Unique Project Name" } }
     end
 
     assert_redirected_to project_url(Project.last)

@@ -4,7 +4,12 @@
   <%= render "devise/shared/error_messages", resource: resource %>
   <div class="field">
     <p><%= f.label :name %></p>
-    <p><%= f.text_field :name %></p>
+    <p><%= f.text_field :name, required: true %></p>
+  </div>
+
+  <div class="field">
+    <p><%= f.label :user_type %></p>
+    <p><%= f.select :user_type, [['Developer', 'developer'], ['Manager', 'manager'], ['QA', 'qa']], { include_blank: "Select Role" }, { required: true } %></p>
   </div>
 
   <div class="field">

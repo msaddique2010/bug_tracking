@@ -1,47 +1,83 @@
-<p style="color: green"><%= notice %></p>
-<span>Project Created by: </span><%= @project.user.name%>
-
-<%= render @project %>
 <div>
-  <% if current_user.has_role?(:manager) && current_user == @project.user %>
-    <%= link_to "Edit this project", edit_project_path(@project) %> |
-  <% end %>  
-  <%= link_to "Back to projects", projects_path %>
+  <p><%= notice %></p>
 
-  <%= button_to "Destroy this project", @project, method: :delete %>
-</div>
-<br>
-<%= form_with model: @project do |f| %>
-  <%= f.collection_select :user_id, @users, :id, :name %>
-  <%= f.submit "Assign Developer"%>
-<% end %>
-
-<div>
-  <br><br>
-  <%= link_to "Add a Bug", new_project_bug_path(@project)%>
-  <br>---------- Bugs ---------- <br>
-  <%@bugs.each do |bug|%>
   <div>
-    <strong>Title:</strong>
-    <%= bug.title %>
+    <div>
+      <h1><%= @project.name %></h1>
+      <p>Created by: <strong><%= @project.user.name %></strong> (<%= @project.user.email %>)</p>
+    </div>
+    <div>
+      <%= link_to "Back to Projects", projects_path %>
+      
+      <% if policy(@project).edit? %>
+        <%= link_to "Edit Project / Manage Team", edit_project_path(@project) %>
+      <% end %>
+
+      <% if policy(@project).destroy? %>
+        <%= button_to "Delete Project", @project, method: :delete, data: { confirm: "Are you sure?" } %>
+      <% end %>
+    </div>
   </div>
 
   <div>
-    <strong>Deadline:</strong>
-    <%= bug.deadline %>
+    <h3>Description</h3>
+    <p><%= @project.description.presence || "No description provided." %></p>
   </div>
 
   <div>
-    <strong>Bug type:</strong>
-    <%= bug.bug_type %>
+    <h3>Assigned Team Members</h3>
+    <div>
+      <% if @project.users.any? %>
+        <% @project.users.each do |user| %>
+          <div>
+            <strong><%= user.name %></strong>
+            <span><%= user.user_type %></span>
+          </div>
+        <% end %>
+      <% else %>
+        <p>No team members assigned yet.</p>
+      <% end %>
+    </div>
   </div>
 
+  <!-- Bugs Section -->
   <div>
-    <strong>Status:</strong>
-    <%= bug.status %>
+    <div>
+      <h2>Bugs & Features</h2>
+      <div>
+        <%= link_to "View All Bugs & Filters", project_bugs_path(@project) %>
+        <% if policy(Bug.new(project: @project)).create? %>
+          <%= link_to "Report New Bug", new_project_bug_path(@project) %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Mini Bug List -->
+    <% if @bugs.any? %>
+      <div>
+        <% @bugs.take(5).each do |bug| %>
+          <div>
+            <div>
+              <span><%= bug.bug_type %></span>
+              <span><%= bug.status %></span>
+              <h4><%= bug.title %></h4>
+              <span>Deadline: <%= bug.deadline.presence || "No deadline" %> | Assignee: <%= bug.developer ? bug.developer.name : "Unassigned" %></span>
+            </div>
+            <div>
+              <%= link_to "Details", project_bug_path(@project, bug) %>
+            </div>
+          </div>
+        <% end %>
+        <% if @bugs.size > 5 %>
+          <div>
+            <%= link_to "Show all #{@bugs.size} bugs...", project_bugs_path(@project) %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div>
+        <p>No bugs or features reported for this project yet.</p>
+      </div>
+    <% end %>
   </div>
-  <%= link_to "Show this bug", project_bug_path(@project, bug.id) %>
-  <br>
-  ------------------------------------------<br><br>
-  <%end%>
 </div>

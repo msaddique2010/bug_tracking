@@ -1,10 +1,19 @@
-<p style="color: green"><%= notice %></p>
-
-<%= render @bug %>
-
 <div>
-<%= link_to "Edit this bug", edit_project_bug_path(@project, @bug) %>
-<%= link_to "Back to Project", project_path(@project) %>
+  <p><%= notice %></p>
 
-<%= button_to "Destroy this bug", project_bug_path(@project, @bug), method: :delete %>
+  <h1>Bug/Feature Details</h1>
+
+  <%= render @bug %>
+
+  <div>
+    <%= link_to "Back to Bug List", project_bugs_path(@project) %>
+
+    <% if policy(@bug).edit? %>
+      <%= link_to "Edit Bug", edit_project_bug_path(@project, @bug) %>
+    <% end %>
+
+    <% if policy(@bug).destroy? %>
+      <%= button_to "Delete Bug", project_bug_path(@project, @bug), method: :delete, data: { confirm: "Are you sure?" } %>
+    <% end %>
+  </div>
 </div>
